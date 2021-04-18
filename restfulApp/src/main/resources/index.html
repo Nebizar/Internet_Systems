@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pl">
+    <head>
+        <link rel="stylesheet" href="index.css"/>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Student manager</title>
+        <script src='knockout-3.5.0.js'></script>
+        <script src='knock-mapping.js'></script>
+        <script src='jquery-3.4.1.min.js'></script>
+        <script src='index.js'></script>
+    </head>
+
+    <body>
+        <h1 class="header">
+            <img src="https://image.flaticon.com/icons/png/512/115/115893.png" width="80" height="80" alt="Manager icon" title="Manager icon"/>
+            System ocen studentów
+        </h1>
+        <div class="flexbox">
+            <nav class="c">
+                <ul>
+                    <li><a class="links" href="#students_form">Studenci</a></li>
+                    <li><a class="links" href="#courses_form" >Kursy</a></li>
+                </ul>
+            </nav>
+
+            <div class="forms">
+                <article>
+                <form id="students_form" data-bind="submit: addStudent">
+                    <h3>Studenci</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Indeks<br><input data-bind="textInput: studentsQuery.index" placeholder="wyszukaj" type="search"/></th>
+                            <th>Imię<br><input data-bind="textInput: studentsQuery.firstName" placeholder="wyszukaj" type="search"/></th>
+                            <th>Nazwisko<br><input data-bind="textInput: studentsQuery.lastName" placeholder="wyszukaj" type="search"/></th>
+                            <th>Data urodzenia<br><input data-bind="textInput: studentsQuery.birthday" type="date"/></th>
+                            <th>Akcje</th>
+                        </tr>
+                        </thead>
+                        <tbody data-bind="foreach: students">
+                            <tr>
+                                <td><input type="text" data-bind="value: index" required readonly/></td>
+                                <td><input type="text" data-bind="value: firstName" required/></td>
+                                <td><input type="text" data-bind="value: lastName" required/></td>
+                                <td><input type="date" data-bind="value: birthday" required/></td>
+                                <td>
+                                    <a href="#grades_form" data-bind="click: $parent.showGrades.bind($(this).closest('tr').find('input').val())">Zobacz oceny</a>
+                                    <button type="button" data-bind="click: $parent.deleteStudent.bind($(this).closest('tr').find('input').val())">Usuń</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tr>
+                            <td></td>
+                            <td><input data-bind="value: newStudent.firstName" type="text" required/></td>
+                            <td><input data-bind="value: newStudent.lastName" type="text" required/></td>
+                            <td><input data-bind="value: newStudent.birthday" type="date" required/></td>
+                            <td><button type="submit">Dodaj</button></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </form>
+                </article>
+                
+                <article>
+                <form id="grades_form" data-bind="submit: addGrade">
+                    <h3>Oceny</h3>
+                    <p>Indeks studenta: <span data-bind="text: index"></span></p>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Kurs<br><input data-bind="textInput: gradeQuery.name" placeholder="wyszukaj" type="search"/></th>
+                            <th>Ocena<br><input data-bind="textInput: gradeQuery.value" placeholder="wyszukaj" type="search"/></th>
+                            <th>Data<br><input data-bind="textInput: gradeQuery.date" type="date"/></th>
+                            <th>Akcje</th>
+                        </tr>
+                        </thead>
+                        <tbody data-bind="foreach: grades">
+                        <tr>
+                            <td>
+                                <select data-bind="options: $parent.courses,
+                                optionsText: function(item) {
+                                    return item.name;
+                                },
+                                optionsValue: function(item) {
+                                    return item.id;
+                                },
+                                value: course.name">
+                                </select>
+                            </td>
+                            <td><input type="number" min="2" max="5" step="0.5" data-bind="value: value" required/></td>
+                            <td><input type="date" data-bind="value: date" required/></td>
+
+                            <td><button type="button" data-bind="click: $parent.deleteGrade.bind($(this).closest('tr').find('input').val())">Usuń</button></td>
+                        </tr>
+                        </tbody>
+                        <tr>
+                            <td>
+                                <select data-bind="options: courses,
+                                optionsText: function(item) {
+                                    return item.name;
+                                },
+                                optionsValue: function(item) {
+                                    return item;
+                                },
+                                value: newGrade.course">
+                                </select>
+                            </td>
+                            <td><input type="number" min="2" max="5" step="0.5" data-bind="value: newGrade.value" required/></td>
+                            <td><input data-bind="value: newGrade.date" type="date" required/></td>
+                            <td><button type="submit">Dodaj</button></td>
+                        </tr>
+                    </table>
+                </form>
+                </article>
+                
+                <article>
+                <form id="courses_form" data-bind="submit: addCourse">
+                    <h3>Kursy</h3>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Nazwa<br><input  data-bind="textInput: courseQuery.name" placeholder="wyszukaj" type="search"/></th>
+                            <th>Nauczyciel<br><input data-bind="textInput: courseQuery.lecturer" placeholder="wyszukaj" type="search"/></th>
+                            <th>Akcje<br></th>
+                        </tr>
+                        </thead>
+                        <tbody data-bind="foreach: courses">
+                        <tr>
+                            <td><input type="text" data-bind="value: name"  required/></td>
+                            <td><input type="text" data-bind="value: lecturer"  required/></td>
+                            <td><button type="button" data-bind="click: $parent.deleteCourse.bind($(this).closest('tr').find('input').val())">Usuń</button></td>
+                        </tr>
+                        </tbody>
+                        <tr>
+                            <td><input type="text" data-bind="value: newCourse.name"  required/></td>
+                            <td><input type="text" data-bind="value: newCourse.lecturer"  required/></td>
+                            <td><button type="submit">Dodaj</button></td>
+                        </tr>
+                    </table>
+                </form>
+                </article>
+                
+            </div>
+        </div>
+        
+        <footer>
+            <a href="https://google.pl">Google</a>
+            <a href="https://github.com/Nebizar">Github</a>
+            <a href="https://www.linkedin.com/in/krzysztof-pasiewicz-8b2411161/">LinkedIn</a>
+            <br>
+            @ Copyright 2020
+            <br>
+            Krzysztof Pasiewicz, 132302
+        </footer>
+    </body>
+
+</html>
